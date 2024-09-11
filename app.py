@@ -26,9 +26,13 @@ segmentation_model=tf.keras.models.load_model('deeplabnetown.h5', custom_objects
 dice_loss,'dice_coef':dice_coef})
 model1=tf.keras.models.load_model('resnetfinal (3).h5',compile=False)
 model2=tf.keras.models.load_model('inceptionfinal.h5',compile=False)
+model3=tf.keras.models.load_model('mobilenetfinal.h5',comiple=False)
+model4=tf.keras.load_model('vgg_final.h5',compile=False)
 adam = keras.optimizers.Adam(learning_rate=0.0001)
 model1.compile(optimizer=adam, loss = 'categorical_crossentropy', metrics=['accuracy'])
 model2.compile(optimizer=adam, loss = 'categorical_crossentropy', metrics=['accuracy'])
+model3.compile(optimizer=adam, loss = 'categorical_crossentropy', metrics=['accuracy'])
+model4.compile(optimizer=adam, loss = 'categorical_crossentropy', metrics=['accuracy'])
 H = 256
 W = 256
 save_image_path='mini code'
@@ -51,7 +55,9 @@ def majority_voting(model1, model2,image,image_size=224):
     image = np.reshape(image,[1,224,224,3])
     prediction1 = model1.predict(image)
     predictions2 = model2.predict(image)  
-    majority_vote = np.round((prediction1 + predictions2) / 2)
+    prediction3 = model3.predict(image)
+    predictions4 = model4.predict(image)  
+    majority_vote = np.round((prediction1 + predictions2+prediction3+prediction4) / 4)
     tumor=np.argmax(majority_vote, axis=1)
     if tumor==0:
         predictiontext="Tumor found and it is GLIOMA"
